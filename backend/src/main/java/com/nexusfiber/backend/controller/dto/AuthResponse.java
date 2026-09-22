@@ -1,0 +1,17 @@
+package com.nexusfiber.backend.controller.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class AuthResponse {
+    private String access;
+    private String refresh;
+    private String role;
+    private String username;
+}
