@@ -1,0 +1,36 @@
+name: Continuous Deployment
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to VPS
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Execute Deployment Script via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          script: |
+            echo "Starting Continuous Deployment..."
+            cd /opt/nexusfiber_new
+            
+            echo "Syncing repository to latest main branch..."
+            git fetch origin main
+            git reset --hard origin/main
+            
+            echo "Rebuilding and restarting containers..."
+            docker compose build --no-cache
+            docker compose up -d
+            
+            echo "Waiting for backend to initialize..."
+            sleep 10
+            docker compose logs backend
+            
+            echo "Deployment successful!"
